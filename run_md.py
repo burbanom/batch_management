@@ -33,15 +33,9 @@ def parse_commandline_arguments():
     parser.add_argument( '--maxloops', '-ml', metavar = 'N', type=int, required = False, default = 1000, help='maximum number of loops for the script to run' )
     parser.add_argument( '--seconds', '-s', metavar = 'N', type=int, required = True, help='Number of seconds between after which command will be executed' )
     parser.add_argument( '--wait', '-w', metavar = 'N', type=int, required = False, help='Number of seconds that program will wait' )
-    parser.add_argument( '--starttime', '-st', metavar = 'N', type=int, required = True, help='Hour from which jobs can be submitted' )
-    parser.add_argument( '--endtime', '-et', metavar = 'N', type=int, required = True, help='Hour up to which jobs can be submitted' )
+    parser.add_argument( '--starttime', '-st', metavar = 'N', type=int, required = False, default = 17, help='Hour from which jobs can be submitted' )
+    parser.add_argument( '--endtime', '-et', metavar = 'N', type=int, required = False, default = 8, help='Hour up to which jobs can be submitted' )
     parser.add_argument( '--debug', '-d', metavar = 'B', type=bool, required = False, default=False, help='Print debug messages?' )
-    #parser.add_argument( '--msdlen', '-ml', metavar = 'N', type=int, required = True, help='Length of msd' )
-    #parser.add_argument( '--prntfrq', '-p', metavar = 'N', type=int, required = False, default = 1000, help='Print frequency of displacements' )
-    #parser.add_argument( '--timestep', '-t', metavar = 'F', type=float, required = False, default = 41.3414, help='Simulation timestep in a.u.' )
-    #parser.add_argument( '--displacement-file', '-d', help='complete displacement file filename', default='displong.out.gz' )
-    #parser.add_argument( '--timewindow', '-tw', nargs='+', type=int, help='hours between which jobs can be submitted', required = True )
-    #parser.add_argument( '--convcalc', '-cc', action='store_true', help='Perform a slope convergence calculation rather than the slope statistics calculation.' )
     return parser.parse_args()
 
 
