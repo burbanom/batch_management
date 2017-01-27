@@ -24,7 +24,7 @@ __license__ = "GPL"
 __version__ = "1.0"
 __email__ = "burbano.carmona@gmail.com"
 __date__ = "27 Jan., 2017"
-__status__ = "Production"
+__status__ = "Experimental"
 
 
 def parse_commandline_arguments():
