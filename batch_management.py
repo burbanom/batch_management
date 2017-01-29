@@ -92,5 +92,6 @@ class batch_script:
     def submit_job( self , sub_command = 'llsubmit' ): 
         self.submit = check_output( [ sub_command , 'job.sh'] )
 
-
+    def job_status( self, status_command = 'llq -j' ):
+        self.status = check_output( [ status_command, self.job_id ] )
 
