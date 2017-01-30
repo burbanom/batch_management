@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 import os
-from subprocess import check_output, STDOUT
+from subprocess import Popen, PIPE, STDOUT
 
 """
 Below is an example of the job script
@@ -40,8 +40,8 @@ Below is an example of the job script
 
 class BatchScript:
 
-    def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
-            exports = None, , extras = None, script_type = 'll' ):
+    def __init__( self, options, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
+            exports = None, extras = None, script_type = 'll' ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -101,22 +101,27 @@ class BatchScript:
         else:
             print( 'Script type not supported, yet' )
 
+    #@classmethod
+    #def from_dict( cls, 
+
     def check_queue( self ):
         if self.script_type == 'll':
-            self.theq = check_output( ['llq'], stderr = STDOUT )
+            p = Popen( ['llq'], stdout = PIPE, stderr = PIPE )
+            self.q_out, self.q_err = p.communicate()
         else:
             print( 'Script type not supported, yet' )
         return
 
     def submit_job( self ): 
         if self.script_type == 'll':
-            self.submit = check_output( [ 'llsubmit', 'job.sh'] )
+            p = Popen( [ 'llsubmit', 'job.sh'], stdout = PIPE, stderr = STDOUT )
+            self.job_id, self.job_id_err = p.communicate()
         else:
             print( 'Script type not supported, yet' )
 
     def job_status( self ):
         if self.script_type == 'll':
-            self.status = check_output( [ 'llq -j', self.job_id ] )
+            self.status = Popen( [ 'llq -j', self.job_id ] )
         else:
             print( 'Script type not supported, yet' )
 
