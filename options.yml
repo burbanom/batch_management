@@ -1,0 +1,10 @@
+modules:
+    intel-env/15.0.0 
+    intelmpi/5.0.1 
+    lapack/3.5_intel15 
+    mkl/11.2
+    autotools/Feb2014
+    python/anaconda-2.3.0
+export:
+    PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH
+    PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH

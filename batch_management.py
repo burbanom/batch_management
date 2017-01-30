@@ -10,10 +10,10 @@ Below is an example of the job script
     #!/bin/bash
 
     #
-    # Job Submission Script for Poincare
+    # Job Submission Script
     #
 
-    #@ class            = clallmds
+    #@ class            = queue 
     #@ job_name         = md 
     #@ total_tasks      = 1
     #@ node             = 1
@@ -25,25 +25,23 @@ Below is an example of the job script
     #@ queue
 
     module purge
-    module load intel-env/15.0.0 intelmpi/5.0.1 lapack/3.5_intel15 mkl/11.2
-    module load autotools/Feb2014
-    module load python/anaconda-2.3.0
+    module load mod1 
+    module load mod2 
+    module load mod3 
     unset LD_PRELOAD
 
     rm my_env
     env > my_env
 
-    export PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH
-    export PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH
-
-    mpirun -np $LOADL_TOTAL_TASKS /gpfs1l/gpfshome/mds/staff/mburbano/Source/cp2k-3.0_modif/exe/Linux-x86-64-intel/cp2k.popt input-restart.inpt  >> md.out 
+    mpirun -np $LOADL_TOTAL_TASKS prog.exe input.inp
 
 """
 
 
 class batch_script:
 
-    def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = [] ):
+    def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
+            exports = None ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -59,7 +57,14 @@ class batch_script:
         self.exec_path = str( exec_path )
         self.job_name = str( job_name )
         self.queue = str( queue )
-        self.modules = modules
+        if modules is None:
+            self.modules = [] 
+        else:
+            self.modules = modules
+        if exports is None:
+            self.exports = [] 
+        else:
+            self.exports = exports 
 
     def create_ll( self ):
         out_file = open( 'job.sh', 'w' )
@@ -75,13 +80,13 @@ class batch_script:
         out_file.write( '#@ environment      = COPY_ALL' + '\n' )
         out_file.write( '#@ queue' + '\n' )
         out_file.write( 'module purge\n' )
-        out_file.write( 'module load intel-env/15.0.0 intelmpi/5.0.1 lapack/3.5_intel15 mkl/11.2\n' )
-        out_file.write( 'module load autotools/Feb2014\n' )
-        out_file.write( 'module load python/anaconda-2.3.0\n' )
+        for module in self.modules:
+            out_file.write( 'module load ' + str( module ) + ' \n' )
         out_file.write( 'unset LD_PRELOAD\n' )
         out_file.write( '\n' )
-        out_file.write( 'export PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH\n' )
-        out_file.write( 'export PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH\n' )
+        for export in self.exports:
+            out_file.write( 'export ' + str( export ) + ' \n' )
+        out_file.write( '\n' )
         out_file.write( 'mpirun -np $LOADL_TOTAL_TASKS ' + self.exec_path +
                 self.executable + ' ' + self.job_name +'.inp\n' )
 
