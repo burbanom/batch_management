@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 from subprocess import check_output, STDOUT
 
@@ -40,7 +41,7 @@ Below is an example of the job script
 class batch_script:
 
     def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
-            exports = None ):
+            exports = None, script_type = 'll' ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -64,38 +65,51 @@ class batch_script:
             self.exports = [] 
         else:
             self.exports = exports 
+        self.script_type = script_type
 
-    def create_ll( self ):
-        out_file = open( 'job.sh', 'w' )
-        out_file.write( '#!/bin/bash\n' )
-        out_file.write( '#@ class            = ' + self.queue + '\n' )
-        out_file.write( '#@ job_name         = ' + self.job_name + '\n' )
-        out_file.write( '#@ total_tasks      = ' + str( self.ncores ) + '\n' )
-        out_file.write( '#@ node             = ' + str( self.nnodes ) + '\n' )
-        out_file.write( '#@ wall_clock_limit = ' + '0:00:' + str( self.duration ) + '\n' )
-        out_file.write( '#@ output           = $(job_name).$(jobid).log' + '\n' )
-        out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
-        out_file.write( '#@ job_type         = mpich' + '\n' )
-        out_file.write( '#@ environment      = COPY_ALL' + '\n' )
-        out_file.write( '#@ queue' + '\n' )
-        out_file.write( 'module purge\n' )
-        for module in self.modules:
-            out_file.write( 'module load ' + str( module ) + ' \n' )
-        out_file.write( 'unset LD_PRELOAD\n' )
-        out_file.write( '\n' )
-        for export in self.exports:
-            out_file.write( 'export ' + str( export ) + ' \n' )
-        out_file.write( '\n' )
-        out_file.write( 'mpirun -np $LOADL_TOTAL_TASKS ' + self.exec_path +
-                self.executable + ' ' + self.job_name +'.inp\n' )
+    def create( self ):
+        if self.script_type == 'll':
+            out_file = open( 'job.sh', 'w' )
+            out_file.write( '#!/bin/bash\n' )
+            out_file.write( '#@ class            = ' + self.queue + '\n' )
+            out_file.write( '#@ job_name         = ' + self.job_name + '\n' )
+            out_file.write( '#@ total_tasks      = ' + str( self.ncores ) + '\n' )
+            out_file.write( '#@ node             = ' + str( self.nnodes ) + '\n' )
+            out_file.write( '#@ wall_clock_limit = ' + '0:00:' + str( self.duration ) + '\n' )
+            out_file.write( '#@ output           = $(job_name).$(jobid).log' + '\n' )
+            out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
+            out_file.write( '#@ job_type         = mpich' + '\n' )
+            out_file.write( '#@ environment      = COPY_ALL' + '\n' )
+            out_file.write( '#@ queue' + '\n' )
+            out_file.write( 'module purge\n' )
+            for module in self.modules:
+                out_file.write( 'module load ' + str( module ) + ' \n' )
+            out_file.write( 'unset LD_PRELOAD\n' )
+            out_file.write( '\n' )
+            for export in self.exports:
+                out_file.write( 'export ' + str( export ) + ' \n' )
+            out_file.write( '\n' )
+            out_file.write( 'mpirun -np $LOADL_TOTAL_TASKS ' + self.exec_path +
+                    self.executable + ' ' + self.job_name +'.inp\n' )
+        else:
+            print( 'Script type not supported, yet' )
 
-    def check_queue( self , command = 'llq' ):
-        self.theq = check_output( [ command ], stderr = STDOUT )
+    def check_queue( self ):
+        if self.script_type == 'll':
+            self.theq = check_output( ['llq'], stderr = STDOUT )
+        else:
+            print( 'Script type not supported, yet' )
         return
 
-    def submit_job( self , sub_command = 'llsubmit' ): 
-        self.submit = check_output( [ sub_command , 'job.sh'] )
+    def submit_job( self ): 
+        if self.script_type == 'll':
+            self.submit = check_output( [ 'llsubmit', 'job.sh'] )
+        else:
+            print( 'Script type not supported, yet' )
 
-    def job_status( self, status_command = 'llq -j' ):
-        self.status = check_output( [ status_command, self.job_id ] )
+    def job_status( self ):
+        if self.script_type == 'll':
+            self.status = check_output( [ 'llq -j', self.job_id ] )
+        else:
+            print( 'Script type not supported, yet' )
 
