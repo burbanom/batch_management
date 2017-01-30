@@ -1,12 +1,21 @@
-modules:
-    intel-env/15.0.0 
-    intelmpi/5.0.1 
-    lapack/3.5_intel15 
+executable: metalwalls.exe
+input_file: input.inpt
+mpiexec: |
+    mpirun -np $LOADL_TOTAL_TASKS
+preamble: |
+    @ job_type         = mpich
+    @ environment      = COPY_ALL
+    @ queue
+modules: |
+    intel-env/15.0.0
+    intelmpi/5.0.1
+    lapack/3.5_intel15
     mkl/11.2
     autotools/Feb2014
     python/anaconda-2.3.0
-exports:
+exports: |
     PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH
     PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH
-extras:
+    PATH=/local/home/mburbano/Dropbox/Work/Source/cp2k-3.0_modif/exe/Linux-x86-64-gfortran-ubuntu:$PATH
+extras: |
     unset LD_PRELOAD

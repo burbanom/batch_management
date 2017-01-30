@@ -40,8 +40,9 @@ Below is an example of the job script
 
 class BatchScript:
 
-    def __init__( self, options, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
-            exports = None, extras = None, script_type = 'll' ):
+    def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = None, 
+            preamble = None, job_name = 'md', queue = 'clallmds', modules = None,
+	exports = None, extras = None, input_file = None, script_type = 'll', mpiexec = 'mpirun -np' ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -54,13 +55,24 @@ class BatchScript:
         self.ncores = int( ncores )
         self.nnodes = int( nnodes ) 
         self.executable = str( executable )
-        self.exec_path = str( exec_path )
         self.job_name = str( job_name )
         self.queue = str( queue )
+
+        if exec_path is None:
+            self.exec_path = '' 
+        else:
+            self.exec_path = str( exec_path )
+
+        if preamble is None:
+            self.preamble = [] 
+        else:
+            self.preamble = preamble 
+
         if modules is None:
             self.modules = [] 
         else:
             self.modules = modules
+
         if exports is None:
             self.exports = [] 
         else:
@@ -69,7 +81,10 @@ class BatchScript:
             self.extras = [] 
         else:
             self.extras = extras
+
         self.script_type = script_type
+        self.mpiexec = mpiexec
+        self.input_file = input_file
 
     def create( self ):
         if self.script_type == 'll':
@@ -82,27 +97,81 @@ class BatchScript:
             out_file.write( '#@ wall_clock_limit = ' + '0:00:' + str( self.duration ) + '\n' )
             out_file.write( '#@ output           = $(job_name).$(jobid).log' + '\n' )
             out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
-            out_file.write( '#@ job_type         = mpich' + '\n' )
-            out_file.write( '#@ environment      = COPY_ALL' + '\n' )
-            out_file.write( '#@ queue' + '\n' )
+            for item in self.preamble:
+                out_file.write( '#' + str( item ) + ' \n' )
+            out_file.write( '\n' )
             out_file.write( 'module purge\n' )
             for module in self.modules:
                 out_file.write( 'module load ' + str( module ) + ' \n' )
-            out_file.write( 'unset LD_PRELOAD\n' )
-            out_file.write( '\n' )
-            for export in self.exports:
-                out_file.write( 'export ' + str( export ) + ' \n' )
             out_file.write( '\n' )
             for extra in self.extras:
                 out_file.write( 'export ' + str( extra ) + ' \n' )
             out_file.write( '\n' )
-            out_file.write( 'mpirun -np $LOADL_TOTAL_TASKS ' + self.exec_path +
-                    self.executable + ' ' + self.job_name +'.inp\n' )
+            for export in self.exports:
+                out_file.write( 'export ' + str( export ) + ' \n' )
+            out_file.write( '\n' )
+            if self.input_file is not None:
+                exec_line = str( self.mpiexec ) + ' ' + self.exec_path + self.executable + ' ' + self.input_file + '\n'
+            else:
+                exec_line = str( self.mpiexec ) + ' ' + self.exec_path + self.executable + '\n' 
+            out_file.write(exec_line)
         else:
             print( 'Script type not supported, yet' )
 
-    #@classmethod
-    #def from_dict( cls, 
+    @classmethod
+    def from_dict( cls, options ):
+
+        try:
+            options["preamble"] 
+        except KeyError:
+            preamble = None
+        else:
+            preamble = filter(len, options["preamble"].split("\n"))
+
+        try:
+            options["modules"] 
+        except KeyError:
+            modules = None
+        else:
+            modules = filter(len, options["modules"].split("\n"))
+
+        try:
+            options["extras"] 
+        except KeyError:
+            extras = None
+        else:
+            extras = filter(len, options["extras"].split("\n"))
+
+        try:
+            options["exports"] 
+        except KeyError:
+            exports = None
+        else:
+            exports = filter(len, options["exports"].split("\n"))
+
+        try:
+            options["mpiexec"] 
+        except KeyError:
+            mpiexec = None
+        else:
+            mpiexec = filter(len, options["mpiexec"].split("\n"))[0]
+
+        try:
+            options["executable"] 
+        except KeyError:
+            executable = None
+        else:
+            executable = options["executable"] 
+
+        try:
+            options["input_file"] 
+        except KeyError:
+            input_file = None
+        else:
+            input_file = options["input_file"]
+
+        return cls( preamble = preamble, modules = modules, exports = exports, extras = extras, mpiexec = mpiexec,
+                executable = executable, input_file = input_file ) 
 
     def check_queue( self ):
         if self.script_type == 'll':
