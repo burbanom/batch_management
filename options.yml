@@ -5,6 +5,8 @@ modules:
     mkl/11.2
     autotools/Feb2014
     python/anaconda-2.3.0
-export:
+exports:
     PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH
     PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH
+extras:
+    unset LD_PRELOAD

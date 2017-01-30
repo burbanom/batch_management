@@ -41,7 +41,7 @@ Below is an example of the job script
 class batch_script:
 
     def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
-            exports = None, script_type = 'll' ):
+            exports = None, , extras = None, script_type = 'll' ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -65,6 +65,10 @@ class batch_script:
             self.exports = [] 
         else:
             self.exports = exports 
+        if extras is None:
+            self.extras = [] 
+        else:
+            self.extras = extras
         self.script_type = script_type
 
     def create( self ):
@@ -88,6 +92,9 @@ class batch_script:
             out_file.write( '\n' )
             for export in self.exports:
                 out_file.write( 'export ' + str( export ) + ' \n' )
+            out_file.write( '\n' )
+            for extra in self.extras:
+                out_file.write( 'export ' + str( extra ) + ' \n' )
             out_file.write( '\n' )
             out_file.write( 'mpirun -np $LOADL_TOTAL_TASKS ' + self.exec_path +
                     self.executable + ' ' + self.job_name +'.inp\n' )
