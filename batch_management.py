@@ -100,9 +100,11 @@ class BatchScript:
             for item in self.preamble:
                 out_file.write( '#' + str( item ) + ' \n' )
             out_file.write( '\n' )
-            out_file.write( 'module purge\n' )
             for module in self.modules:
-                out_file.write( 'module load ' + str( module ) + ' \n' )
+                if module == 'purge':
+                    out_file.write( 'module purge\n' )
+                else:
+                    out_file.write( 'module load ' + str( module ) + ' \n' )
             out_file.write( '\n' )
             for extra in self.extras:
                 out_file.write( 'export ' + str( extra ) + ' \n' )

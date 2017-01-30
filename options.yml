@@ -7,6 +7,7 @@ preamble: |
     @ environment      = COPY_ALL
     @ queue
 modules: |
+    purge
     intel-env/15.0.0
     intelmpi/5.0.1
     lapack/3.5_intel15
