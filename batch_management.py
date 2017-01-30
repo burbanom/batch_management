@@ -38,7 +38,7 @@ Below is an example of the job script
 """
 
 
-class batch_script:
+class BatchScript:
 
     def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = './', job_name = 'md', queue = 'clallmds', modules = None,
             exports = None, , extras = None, script_type = 'll' ):
