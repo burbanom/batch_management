@@ -2,7 +2,6 @@
 
 import os
 from subprocess import check_output, STDOUT
-from ase.io.vasp import read_vasp,read_vasp_out
 
 """
 Below is an example of the job script
