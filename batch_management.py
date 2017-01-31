@@ -206,7 +206,10 @@ class BatchScript:
             return self.job_id_err
             
     def is_submitted( self ):
-        pass
+        if self.status is not None
+             print( re.findall(r'\b\d+\b', self.status ))
+        else:
+            sys.exit('Unable to establish job status')
 
     def job_status( self ):
         if self.job_id is not None:
@@ -214,4 +217,6 @@ class BatchScript:
                 self.status = Popen( [ 'llq','-j', str(self.job_id) ] )
             else:
                 print( 'Script type not supported, yet' )
+        else:
+            sys.exit('Unable to establish job status')
 
