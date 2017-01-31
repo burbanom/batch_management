@@ -208,9 +208,10 @@ class BatchScript:
     def is_submitted( self ):
         self.job_status()
         if self.status is not None:
-             print( re.findall(r'\b\d+\b', self.status ))
+             sub_holder = [ int(n) for n in re.findall(r'\b\d+\b', self.status )]
         else:
             sys.exit('Unable to establish job status')
+        return self.job_id in sub_holder 
 
     def job_status( self ):
         if self.job_id is not None:
@@ -221,4 +222,12 @@ class BatchScript:
                 print( 'Script type not supported, yet' )
         else:
             sys.exit('Unable to establish job status')
+    def cancel( self ):
+        if self.is_sumbitted():
+            if self.script_type == 'll':
+                p = Popen( [ 'llcancel',str(self.job_id) ], stdout = PIPE, stderr = STDOUT )
+                self.cancel, self.cancel_err = p.communicate()
+            else:
+                print( 'Script type not supported, yet' )
+
 
