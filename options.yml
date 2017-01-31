@@ -20,17 +20,12 @@ preamble: |
 # The modules to load
 modules: |
     purge
-    intel-env/15.0.0
-    intelmpi/5.0.1
-    lapack/3.5_intel15
-    mkl/11.2
-    autotools/Feb2014
-    python/anaconda-2.3.0
+    intel-env
+    intelmpi
 # Any extra commands you might with to include
 extras: |
     unset LD_PRELOAD
 # Any variables that you might wish to export 
 exports: |
-    PYTHONPATH=/home/user/Source/ase:$PYTHONPATH
-    PYTHONPATH=/home/user/Source/pycp2k:$PYTHONPATH
+    PYTHONPATH=/home/user/Source/code:$PYTHONPATH
     PATH=/home/user/Source/cp2k-3.0_modif/exe/Linux-x86-64-intel:$PATH
