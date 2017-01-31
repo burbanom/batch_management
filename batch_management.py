@@ -207,7 +207,7 @@ class BatchScript:
             
     def is_submitted( self ):
         self.job_status()
-        if self.status is not None
+        if self.status is not None:
              print( re.findall(r'\b\d+\b', self.status ))
         else:
             sys.exit('Unable to establish job status')
