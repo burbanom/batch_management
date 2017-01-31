@@ -209,7 +209,7 @@ class BatchScript:
         pass
 
     def job_status( self ):
-        if self.script_type == 'll' and self.job_id.isdigit():
+        if self.script_type == 'll' and self.job_id is not None:
             self.status = Popen( [ 'llq -j', self.job_id ] )
         else:
             print( 'Script type not supported, yet' )
