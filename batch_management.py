@@ -42,8 +42,8 @@ Below is an example of the job script
 
 def seconds_to_hms( atime ):
     from types import *
-    assert type(atime) is IntType, "Duration is not an integer: %r" % atime
-    return str( datetime.timedelta( seconds = atime )
+    #assert type(atime) is IntType, "Duration is not an integer: %r" % atime
+    return str( datetime.timedelta( seconds = int( atime ) )
 
 class BatchScript:
 
