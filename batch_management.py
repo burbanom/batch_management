@@ -40,6 +40,10 @@ Below is an example of the job script
 
 """
 
+def seconds_to_hms( atime ):
+    from types import *
+    assert type(atime) is IntType, "Duration is not an integer: %r" % atime
+    return str( datetime.timedelta( seconds = atime )
 
 class BatchScript:
 
@@ -54,7 +58,7 @@ class BatchScript:
         # job_name is self explanatory
         # queue is the job queue that you want to be assigned (class)
         self.location = str( location )
-        self.duration = str( datetime.timedelta( seconds = int(duration)) )
+        self.duration = int(duration)
         self.ncores = int( ncores )
         self.nnodes = int( nnodes ) 
         self.executable = str( executable )
@@ -98,7 +102,7 @@ class BatchScript:
             out_file.write( '#@ job_name         = ' + self.job_name + '\n' )
             out_file.write( '#@ total_tasks      = ' + str( self.ncores ) + '\n' )
             out_file.write( '#@ node             = ' + str( self.nnodes ) + '\n' )
-            out_file.write( '#@ wall_clock_limit = ' + self.duration + '\n' )
+            out_file.write( '#@ wall_clock_limit = ' + seconds_to_hms( self.duration ) + '\n' )
             out_file.write( '#@ output           = $(job_name).$(jobid).out' + '\n' )
             out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
             for item in self.preamble:
