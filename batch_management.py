@@ -205,6 +205,15 @@ class BatchScript:
         else:
             return self.job_id_err
             
+    def is_running( self ):
+        if self.is_submitted():
+            if self.script_type == 'll':
+                pattern = re.compile( r'\bR\b' )
+                if pattern.search( self.status ) is not None:
+                    return True
+                else:
+                    return False
+
     def is_submitted( self ):
         self.job_status()
         if self.status is not None:
@@ -222,6 +231,7 @@ class BatchScript:
                 print( 'Script type not supported, yet' )
         else:
             sys.exit('Unable to establish job status')
+
     def cancel( self ):
         if self.is_submitted():
             if self.script_type == 'll':
