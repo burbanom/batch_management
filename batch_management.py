@@ -226,7 +226,7 @@ class BatchScript:
         if self.is_submitted():
             if self.script_type == 'll':
                 p = Popen( [ 'llcancel',str(self.job_id) ], stdout = PIPE, stderr = STDOUT )
-                self.cancel, self.cancel_err = p.communicate()
+                self.cancelled, self.cancelled_err = p.communicate()
             else:
                 print( 'Script type not supported, yet' )
 
