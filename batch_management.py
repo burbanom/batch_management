@@ -210,7 +210,7 @@ class BatchScript:
 
     def job_status( self ):
         if self.script_type == 'll' and self.job_id is not None:
-            self.status = Popen( [ 'llq -j', self.job_id ] )
+            self.status = Popen( [ 'llq ','-j ', str( self.job_id ) ] )
         else:
             print( 'Script type not supported, yet' )
 
