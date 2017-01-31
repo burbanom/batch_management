@@ -203,11 +203,13 @@ class BatchScript:
         if self.job_id is not None:
             return self.job_id
         else:
-            #sys.exit('Job ID not available')
             return self.job_id_err
             
+    def is_submitted( self ):
+        pass
+
     def job_status( self ):
-        if self.script_type == 'll':
+        if self.script_type == 'll' and self.job_id.isdigit():
             self.status = Popen( [ 'llq -j', self.job_id ] )
         else:
             print( 'Script type not supported, yet' )
