@@ -213,6 +213,8 @@ class BatchScript:
                     return True
                 else:
                     return False
+        else:
+            return False
 
     def is_submitted( self ):
         self.job_status()
