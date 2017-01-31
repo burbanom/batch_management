@@ -49,7 +49,7 @@ class BatchScript:
 
     def __init__( self, location = './', duration = 3600, ncores = 16, nnodes = 1, executable = 'cp2k.popt', exec_path = None, 
             preamble = None, job_name = 'md', queue = 'clallmds', modules = None,
-	exports = None, extras = None, input_file = None, script_type = 'll', mpiexec = 'mpirun -np' ):
+	exports = None, extras = None, input_file = None, script_type = 'll', mpiexec = 'mpirun -np', use_ssh = None ):
         # location refers to the folder where the script will be written
         # duration refers to the time that will be requested in seconds
         # cores refers to the number of cores that will be requested in the script
@@ -88,6 +88,11 @@ class BatchScript:
             self.extras = [] 
         else:
             self.extras = extras
+
+        if use_ssh is None:
+            self.use_ssh = '' 
+        else:
+            self.use_ssh = str( use_ssh )
 
         self.script_type = script_type
         self.mpiexec = mpiexec
@@ -180,8 +185,15 @@ class BatchScript:
         else:
             input_file = options["input_file"]
 
+        try:
+            options["use_ssh"] 
+        except KeyError:
+            use_ssh = '' 
+        else:
+            use_ssh = filter(len, options["extras"].split("\n"))
+
         return cls( preamble = preamble, modules = modules, exports = exports, extras = extras, mpiexec = mpiexec,
-                executable = executable, input_file = input_file ) 
+                executable = executable, input_file = input_file, use_ssh = use_ssh  ) 
 
     def check_queue( self ):
         if self.script_type == 'll':

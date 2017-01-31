@@ -11,6 +11,9 @@ input_file: input.inp
 # variable (resource management dependent) that sets the number of cores.
 mpiexec: |
     mpirun -np $LOADL_TOTAL_TASKS
+# This directs the script to run the sumission commands through ssh 
+use_ssh: |
+    ssh user@server 
 # The preamble corresponds to commands that might be specific to the 
 # machine. These lines will be preceeded by an # in the final script.
 preamble: |
