@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 import os
+import re
+import sys
 from subprocess import Popen, PIPE, STDOUT
 
 """
@@ -95,7 +97,7 @@ class BatchScript:
             out_file.write( '#@ total_tasks      = ' + str( self.ncores ) + '\n' )
             out_file.write( '#@ node             = ' + str( self.nnodes ) + '\n' )
             out_file.write( '#@ wall_clock_limit = ' + '0:00:' + str( self.duration ) + '\n' )
-            out_file.write( '#@ output           = $(job_name).$(jobid).log' + '\n' )
+            out_file.write( '#@ output           = $(job_name).$(jobid).out' + '\n' )
             out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
             for item in self.preamble:
                 out_file.write( '#' + str( item ) + ' \n' )
@@ -104,13 +106,13 @@ class BatchScript:
                 if module == 'purge':
                     out_file.write( 'module purge\n' )
                 else:
-                    out_file.write( 'module load ' + str( module ) + ' \n' )
+                    out_file.write( 'module load ' + str( module ) + '\n' )
             out_file.write( '\n' )
             for extra in self.extras:
-                out_file.write( 'export ' + str( extra ) + ' \n' )
+                out_file.write( str( extra ) + '\n' )
             out_file.write( '\n' )
             for export in self.exports:
-                out_file.write( 'export ' + str( export ) + ' \n' )
+                out_file.write( 'export ' + str( export ) + '\n' )
             out_file.write( '\n' )
             if self.input_file is not None:
                 exec_line = str( self.mpiexec ) + ' ' + self.exec_path + self.executable + ' ' + self.input_file + '\n'
@@ -186,10 +188,22 @@ class BatchScript:
     def submit_job( self ): 
         if self.script_type == 'll':
             p = Popen( [ 'llsubmit', 'job.sh'], stdout = PIPE, stderr = STDOUT )
-            self.job_id, self.job_id_err = p.communicate()
+
+            id_holder, self.job_id_err = p.communicate()
+
+            try:
+                self.job_id = int( re.findall(r'\b\d+\b', id_holder )[0] )
+            except:
+                print( 'Unable to retreive job ID' )
         else:
             print( 'Script type not supported, yet' )
 
+        if self.job_id is not None:
+            return self.job_id
+        else:
+            #sys.exit('Job ID not available')
+            return self.job_id_err
+            
     def job_status( self ):
         if self.script_type == 'll':
             self.status = Popen( [ 'llq -j', self.job_id ] )
