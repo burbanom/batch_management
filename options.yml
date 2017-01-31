@@ -1,17 +1,18 @@
 # The executable that you wish to run
 executable: cp2k.popt
-# The input file if required by the program
-input_file: energy-cc-neutral.inp
+# The input file, if required, for the program
+input_file: input.inp
 #########################################################################
 # N.B. The keys below are followed by | which indicates to the          #
-# parser that the corresponding values are to be understood literally.  #
+# parser that the corresponding values are to be stored as they are     # 
+# provided and shall not be split or operated upon.                     #
 # #######################################################################
 # The mpiexec command on your machine along with an environment
 # variable (resource management dependent) that sets the number of cores.
 mpiexec: |
     mpirun -np $LOADL_TOTAL_TASKS
 # The preamble corresponds to commands that might be specific to the 
-# machine.
+# machine. These lines will be preceeded by an # in the final script.
 preamble: |
     @ job_type         = mpich
     @ environment      = COPY_ALL
@@ -30,6 +31,6 @@ extras: |
     unset LD_PRELOAD
 # Any variables that you might wish to export 
 exports: |
-    PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/ase:$PYTHONPATH
-    PYTHONPATH=/gpfshome/mds/staff/mburbano/Source/pycp2k:$PYTHONPATH
-    PATH=/gpfs1l/gpfshome/mds/staff/mburbano/Source/cp2k-3.0_modif/exe/Linux-x86-64-intel:$PATH
+    PYTHONPATH=/home/user/Source/ase:$PYTHONPATH
+    PYTHONPATH=/home/user/Source/pycp2k:$PYTHONPATH
+    PATH=/home/user/Source/cp2k-3.0_modif/exe/Linux-x86-64-intel:$PATH
