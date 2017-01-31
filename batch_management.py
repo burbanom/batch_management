@@ -223,7 +223,7 @@ class BatchScript:
         else:
             sys.exit('Unable to establish job status')
     def cancel( self ):
-        if self.is_sumbitted():
+        if self.is_submitted():
             if self.script_type == 'll':
                 p = Popen( [ 'llcancel',str(self.job_id) ], stdout = PIPE, stderr = STDOUT )
                 self.cancel, self.cancel_err = p.communicate()
