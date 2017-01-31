@@ -206,6 +206,7 @@ class BatchScript:
             return self.job_id_err
             
     def is_submitted( self ):
+        self.job_status()
         if self.status is not None
              print( re.findall(r'\b\d+\b', self.status ))
         else:
