@@ -4,6 +4,7 @@ from __future__ import print_function
 import os
 import re
 import sys
+import datetime
 from subprocess import Popen, PIPE, STDOUT
 
 """
@@ -53,7 +54,7 @@ class BatchScript:
         # job_name is self explanatory
         # queue is the job queue that you want to be assigned (class)
         self.location = str( location )
-        self.duration = int( duration )
+        self.duration = str( datetime.timedelta( seconds = int(duration)) )
         self.ncores = int( ncores )
         self.nnodes = int( nnodes ) 
         self.executable = str( executable )
@@ -88,6 +89,7 @@ class BatchScript:
         self.mpiexec = mpiexec
         self.input_file = input_file
 
+
     def create( self ):
         if self.script_type == 'll':
             out_file = open( 'job.sh', 'w' )
@@ -96,7 +98,7 @@ class BatchScript:
             out_file.write( '#@ job_name         = ' + self.job_name + '\n' )
             out_file.write( '#@ total_tasks      = ' + str( self.ncores ) + '\n' )
             out_file.write( '#@ node             = ' + str( self.nnodes ) + '\n' )
-            out_file.write( '#@ wall_clock_limit = ' + '0:00:' + str( self.duration ) + '\n' )
+            out_file.write( '#@ wall_clock_limit = ' + self.duration + '\n' )
             out_file.write( '#@ output           = $(job_name).$(jobid).out' + '\n' )
             out_file.write( '#@ error            = $(job_name).$(jobid).err' + '\n' )
             for item in self.preamble:
